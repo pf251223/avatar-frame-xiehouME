@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>邂逅ME头像框</title>
+    <style>
+        /* 全局样式 - 手机端适配 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        body {
+            background-color: #f8f5ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            gap: 20px;
+        }
+
+        /* 清华紫色主题色（可根据需求微调） */
+        :root {
+            --tsinghua-purple: #7A0099;
+            --light-purple: #f0e6ff;
+            --text-gray: #666666;
+        }
+
+        /* 头部区域 - Logo+标题 */
+        header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+        .logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+        h1 {
+            color: var(--tsinghua-purple);
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* 头像上传区域 */
+        .upload-section {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .upload-label {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed var(--tsinghua-purple);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+        .upload-label img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        .upload-label .placeholder {
+            color: var(--tsinghua-purple);
+            font-size: 14px;
+            text-align: center;
+        }
+        #avatar-input {
+            display: none;
+        }
+
+        /* 头像框选择区域 */
+        .frame-section {
+            width: 100%;
+            max-width: 400px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 8px;
+        }
+        .frame-item {
+            aspect-ratio: 1 / 1;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            background-color: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .frame-item.selected {
+            border-color: var(--tsinghua-purple);
+            box-shadow: 0 0 0 3px var(--light-purple);
+        }
+        .frame-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 预览区域 */
+        .preview-section {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .preview-title {
+            color: var(--tsinghua-purple);
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .preview-canvas {
+            width: 240px;
+            height: 240px;
+            border-radius: 16px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* 操作按钮 */
+        .action-btn {
+            padding: 12px 32px;
+            background-color: var(--tsinghua-purple);
+            color: #ffffff;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .action-btn:disabled {
+            background-color: #c0a0d0;
+            cursor: not-allowed;
+        }
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 底部出品信息 */
+        footer {
+            margin-top: auto;
+            padding: 16px 0 8px;
+            color: var(--text-gray);
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* 超小屏幕适配（<360px） */
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 20px;
+            }
+            .frame-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部Logo+标题 -->
+    <header>
+        <img src="logo.png" alt="邂逅ME Logo" class="logo">
+        <h1>邂逅ME头像框</h1>
+    </header>
+
+    <!-- 头像上传区域 -->
+    <section class="upload-section">
+        <label for="avatar-input" class="upload-label">
+            <img id="avatar-preview" src="" alt="头像预览">
+            <div class="placeholder">点击上传头像</div>
+        </label>
+        <input type="file" id="avatar-input" accept="image/*">
+    </section>
+
+    <!-- 头像框选择区域（6款） -->
+    <section class="frame-section">
+        <div class="frame-item" data-frame="1">
+            <img src="frame1.png" alt="樱花卷轴圆框">
+        </div>
+        <div class="frame-item" data-frame="2">
+            <img src="frame2.png" alt="樱花方格方框">
+        </div>
+        <div class="frame-item" data-frame="3">
+            <img src="frame3.png" alt="小狮子可爱框">
+        </div>
+        <div class="frame-item" data-frame="4">
+            <img src="frame4.png" alt="邂逅ME人物圆框">
+        </div>
+        <div class="frame-item" data-frame="5">
+            <img src="frame5.png" alt="纸飞机鸽子圆框">
+        </div>
+        <div class="frame-item" data-frame="6">
+            <img src="frame6.png" alt="燕子波浪方框">
+        </div>
+    </section>
+
+    <!-- 预览+保存区域 -->
+    <section class="preview-section">
+        <div class="preview-title">预览效果</div>
+        <canvas id="preview-canvas" class="preview-canvas" width="240" height="240"></canvas>
+        <button id="save-btn" class="action-btn" disabled>保存高清头像</button>
+    </section>
+
+    <!-- 底部出品信息 -->
+    <footer>
+        机械工程系文化策划部出品
+    </footer>
+
+    <script>
+        // 元素获取
+        const avatarInput = document.getElementById('avatar-input');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const frameItems = document.querySelectorAll('.frame-item');
+        const previewCanvas = document.getElementById('preview-canvas');
+        const saveBtn = document.getElementById('save-btn');
+        const ctx = previewCanvas.getContext('2d');
+
+        // 状态变量
+        let avatarImg = null;
+        let selectedFrame = null;
+        let frameImgs = {};
+
+        // 预加载所有头像框图片
+        frameItems.forEach(item => {
+            const frameNum = item.dataset.frame;
+            const img = new Image();
+            img.src = item.querySelector('img').src;
+            img.onload = () => {
+                frameImgs[frameNum] = img;
+            };
+        });
+
+        // 头像上传监听
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // 显示头像预览
+                avatarPreview.src = e.target.result;
+                avatarPreview.style.display = 'block';
+                avatarPreview.previousElementSibling.style.display = 'none';
+
+                // 加载头像用于canvas合成
+                avatarImg = new Image();
+                avatarImg.src = e.target.result;
+                avatarImg.onload = () => {
+                    updatePreview();
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // 头像框选择监听
+        frameItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // 移除其他选中状态
+                frameItems.forEach(i => i.classList.remove('selected'));
+                // 标记当前选中
+                item.classList.add('selected');
+                selectedFrame = item.dataset.frame;
+                updatePreview();
+            });
+        });
+
+        // 更新预览合成效果
+        function updatePreview() {
+            // 未上传头像/未选框时，清空预览并禁用按钮
+            if (!avatarImg || !selectedFrame) {
+                ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+                saveBtn.disabled = true;
+                return;
+            }
+
+            // 清空画布
+            ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+            // 1. 绘制头像（居中、等比缩放，不变形）
+            const avatarSize = Math.min(avatarImg.width, avatarImg.height);
+            const scale = 200 / avatarSize; // 240画布内，头像占200px，留边
+            const x = (previewCanvas.width - avatarImg.width * scale) / 2;
+            const y = (previewCanvas.height - avatarImg.height * scale) / 2;
+            ctx.drawImage(avatarImg, x, y, avatarImg.width * scale, avatarImg.height * scale);
+
+            // 2. 绘制头像框（覆盖在头像上方，利用透明中间显示头像）
+            const frameImg = frameImgs[selectedFrame];
+            ctx.drawImage(frameImg, 0, 0, previewCanvas.width, previewCanvas.height);
+
+            // 启用保存按钮
+            saveBtn.disabled = false;
+        }
+
+        // 保存高清头像（960x960，与原框尺寸一致）
+        saveBtn.addEventListener('click', () => {
+            if (!avatarImg || !selectedFrame) return;
+
+            // 创建高清画布
+            const largeCanvas = document.createElement('canvas');
+            largeCanvas.width = 960;
+            largeCanvas.height = 960;
+            const largeCtx = largeCanvas.getContext('2d');
+
+            // 绘制高清头像
+            const avatarSize = Math.min(avatarImg.width, avatarImg.height);
+            const scale = 800 / avatarSize; // 960画布内，头像占800px
+            const x = (largeCanvas.width - avatarImg.width * scale) / 2;
+            const y = (largeCanvas.height - avatarImg.height * scale) / 2;
+            largeCtx.drawImage(avatarImg, x, y, avatarImg.width * scale, avatarImg.height * scale);
+
+            // 绘制高清头像框
+            const frameImg = frameImgs[selectedFrame];
+            largeCtx.drawImage(frameImg, 0, 0, largeCanvas.width, largeCanvas.height);
+
+            // 生成下载链接
+            const link = document.createElement('a');
+            link.download = `邂逅ME头像_${Date.now()}.png`;
+            link.href = largeCanvas.toDataURL('image/png');
+            link.click();
+        });
+    </script>
+</body>
+</html>
