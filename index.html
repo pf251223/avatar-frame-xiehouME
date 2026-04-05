@@ -18,23 +18,22 @@
             flex-direction: column;
             align-items: center;
             padding: 16px;
-            gap: 20px;
+            gap: 16px;
         }
         :root {
             --tsinghua-purple: #7A0099;
             --light-purple: #f0e6ff;
-            --text-gray: #666666;
+            --text-gray: #666;
         }
         header {
-            width: 100%;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 12px;
+            margin-bottom: 8px;
         }
         .logo {
-            width: 48px;
-            height: 48px;
+            width: 46px;
+            height: 46px;
             object-fit: contain;
         }
         h1 {
@@ -42,15 +41,7 @@
             font-size: 24px;
             font-weight: 600;
         }
-        .upload-section {
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-        .upload-label {
+        .upload-box {
             width: 120px;
             height: 120px;
             border: 2px dashed var(--tsinghua-purple);
@@ -60,213 +51,301 @@
             justify-content: center;
             cursor: pointer;
             background: #fff;
+            overflow: hidden;
         }
-        #avatar-preview {
+        #avatar-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: none;
         }
-        .placeholder {
+        .upload-txt {
             color: var(--tsinghua-purple);
             font-size: 14px;
+            text-align: center;
         }
-        #avatar-input { display: none; }
-        .frame-section {
+        #file-input {
+            display: none;
+        }
+        .zoom-bar {
+            display: flex;
+            gap: 16px;
+            margin: 4px 0;
+        }
+        .zoom-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--tsinghua-purple);
+            color: #fff;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+        }
+        .edit-area {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            border-radius: 16px;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .avatar-container {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 400px;
+            height: 100%;
+            touch-action: none;
+        }
+        #edit-img {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            transform: translate(20px, 20px) scale(1);
+            transform-origin: center;
+        }
+        .frame-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .frame-layer img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .frame-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
+            width: 100%;
+            max-width: 380px;
         }
         .frame-item {
             aspect-ratio: 1/1;
-            border: 3px solid transparent;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
-            cursor: pointer;
+            border: 3px solid transparent;
             background: #fff;
+            cursor: pointer;
         }
         .frame-item.selected {
             border-color: var(--tsinghua-purple);
-            box-shadow: 0 0 0 3px var(--light-purple);
         }
         .frame-item img {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
-        .preview-section {
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-        .preview-title {
-            color: var(--tsinghua-purple);
-            font-size: 18px;
-        }
-        #preview-canvas {
-            width: 240px;
-            height: 240px;
-            border-radius: 16px;
-            background: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .action-btn {
-            padding: 12px 32px;
+        #save-btn {
+            padding: 12px 36px;
             background: var(--tsinghua-purple);
             color: #fff;
             border: none;
             border-radius: 24px;
             font-size: 16px;
-            cursor: pointer;
+            margin-top: 8px;
         }
-        .action-btn:disabled {
-            background: #c0a0d0;
-            cursor: not-allowed;
+        #save-btn:disabled {
+            background: #c3a1d1;
         }
         footer {
             margin-top: auto;
-            color: var(--text-gray);
             font-size: 12px;
+            color: var(--text-gray);
             opacity: 0.7;
-        }
-        .tip {
-            color: var(--tsinghua-purple);
-            font-size: 13px;
-            display: none;
+            padding: 10px 0;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" class="logo" alt="logo">
+    <img src="logo.png" class="logo" alt="LOGO">
     <h1>邂逅ME头像框</h1>
 </header>
 
-<div class="tip">⚠️ 请上传头像后，选择一款头像框查看预览</div>
+<label for="file-input" class="upload-box">
+    <img id="avatar-img" alt="">
+    <div class="upload-txt">点击上传头像</div>
+</label>
+<input type="file" id="file-input" accept="image/*">
 
-<section class="upload-section">
-    <label for="avatar-input" class="upload-label">
-        <img id="avatar-preview">
-        <div class="placeholder">点击上传头像</div>
-    </label>
-    <input type="file" id="avatar-input" accept="image/*">
-</section>
+<div class="zoom-bar">
+    <button class="zoom-btn" id="zoomOut">−</button>
+    <button class="zoom-btn" id="zoomIn">+</button>
+</div>
 
-<section class="frame-section">
-    <div class="frame-item" data-frame="1"><img src="frame1.png"></div>
-    <div class="frame-item" data-frame="2"><img src="frame2.png"></div>
-    <div class="frame-item" data-frame="3"><img src="frame3.png"></div>
-    <div class="frame-item" data-frame="4"><img src="frame4.png"></div>
-    <div class="frame-item" data-frame="5"><img src="frame5.png"></div>
-    <div class="frame-item" data-frame="6"><img src="frame6.png"></div>
-</section>
+<div class="edit-area">
+    <div class="avatar-container">
+        <img id="edit-img" draggable="false">
+    </div>
+    <div class="frame-layer">
+        <img id="frame-preview" src="">
+    </div>
+</div>
 
-<section class="preview-section">
-    <div class="preview-title">预览效果</div>
-    <canvas id="preview-canvas" width="240" height="240"></canvas>
-    <button id="save-btn" disabled>保存高清头像</button>
-</section>
+<div class="frame-grid">
+    <div class="frame-item" data-src="frame1.png"><img src="frame1.png"></div>
+    <div class="frame-item" data-src="frame2.png"><img src="frame2.png"></div>
+    <div class="frame-item" data-src="frame3.png"><img src="frame3.png"></div>
+    <div class="frame-item" data-src="frame4.png"><img src="frame4.png"></div>
+    <div class="frame-item" data-src="frame5.png"><img src="frame5.png"></div>
+    <div class="frame-item" data-src="frame6.png"><img src="frame6.png"></div>
+</div>
+
+<button id="save-btn" disabled>保存头像</button>
 
 <footer>机械工程系文化策划部出品</footer>
 
 <script>
-    const avatarInput = document.getElementById('avatar-input');
-    const avatarPreview = document.getElementById('avatar-preview');
-    const frameItems = document.querySelectorAll('.frame-item');
-    const canvas = document.getElementById('preview-canvas');
-    const ctx = canvas.getContext('2d');
-    const saveBtn = document.getElementById('save-btn');
-    const tip = document.querySelector('.tip');
+const fileInput = document.getElementById('file-input');
+const avatarImg = document.getElementById('avatar-img');
+const editImg = document.getElementById('edit-img');
+const framePreview = document.getElementById('frame-preview');
+const saveBtn = document.getElementById('save-btn');
+const frameItems = document.querySelectorAll('.frame-item');
 
-    let avatarImg = null;
-    let selectedFrame = null;
-    let frameCache = {};
+let currentFrame = null;
+let imgLoaded = false;
 
-    // 预加载头像框
-    frameItems.forEach(item => {
-        const num = item.dataset.frame;
-        const img = new Image();
-        img.src = item.querySelector('img').src;
-        img.onload = () => frameCache[num] = img;
+fileInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    avatarImg.src = url;
+    avatarImg.style.display = 'block';
+    document.querySelector('.upload-txt').style.display = 'none';
+    editImg.src = url;
+    imgLoaded = true;
+    checkEnable();
+});
+
+frameItems.forEach(item => {
+    item.addEventListener('click', () => {
+        frameItems.forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+        const src = item.dataset.src;
+        framePreview.src = src;
+        currentFrame = src;
+        checkEnable();
     });
+});
 
-    // 上传头像
-    avatarInput.onchange = (e) => {
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            avatarPreview.src = e.target.result;
-            avatarPreview.style.display = 'block';
-            document.querySelector('.placeholder').style.display = 'none';
-            
-            avatarImg = new Image();
-            avatarImg.src = e.target.result;
-            avatarImg.onload = () => {
-                tip.style.display = 'block';
-                updatePreview();
-            };
-        };
-        reader.readAsDataURL(file);
-    };
+function checkEnable() {
+    saveBtn.disabled = !(imgLoaded && currentFrame);
+}
 
-    // 选择头像框
-    frameItems.forEach(item => {
-        item.onclick = () => {
-            frameItems.forEach(i => i.classList.remove('selected'));
-            item.classList.add('selected');
-            selectedFrame = item.dataset.frame;
-            tip.style.display = 'none';
-            updatePreview();
-        };
-    });
+let isDragging = false;
+let startX, startY, initialX, initialY;
+let currentX = 20, currentY = 20;
+let scale = 1;
+const container = document.querySelector('.avatar-container');
 
-    // 合成预览（修复版）
-    function updatePreview() {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        saveBtn.disabled = true;
+container.addEventListener('mousedown', dragStart);
+container.addEventListener('touchstart', dragStart);
+document.addEventListener('mousemove', dragMove);
+container.addEventListener('touchmove', dragMove);
+document.addEventListener('mouseup', dragEnd);
+document.addEventListener('touchend', dragEnd);
 
-        if(!avatarImg || !selectedFrame) return;
-
-        // 绘制头像
-        const size = Math.min(avatarImg.width, avatarImg.height);
-        const scale = 200/size;
-        const x = (canvas.width - avatarImg.width*scale)/2;
-        const y = (canvas.height - avatarImg.height*scale)/2;
-        ctx.drawImage(avatarImg, x,y, avatarImg.width*scale, avatarImg.height*scale);
-
-        // 绘制框
-        const frame = frameCache[selectedFrame];
-        if(frame) ctx.drawImage(frame, 0,0,240,240);
-        
-        saveBtn.disabled = false;
+function dragStart(e) {
+    if (e.type === 'touchstart') {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    } else {
+        startX = e.clientX;
+        startY = e.clientY;
     }
+    initialX = currentX;
+    initialY = currentY;
+    isDragging = true;
+}
 
-    // 保存
-    saveBtn.onclick = () => {
-        const largeCanvas = document.createElement('canvas');
-        largeCanvas.width = 960;
-        largeCanvas.height = 960;
-        const lctx = largeCanvas.getContext('2d');
-        
-        const size = Math.min(avatarImg.width, avatarImg.height);
-        const scale = 800/size;
-        const x = (960 - avatarImg.width*scale)/2;
-        const y = (960 - avatarImg.height*scale)/2;
-        lctx.drawImage(avatarImg, x,y, avatarImg.width*scale, avatarImg.height*scale);
-        lctx.drawImage(frameCache[selectedFrame], 0,0,960,960);
+function dragMove(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    let x, y;
+    if (e.type === 'touchmove') {
+        x = e.touches[0].clientX - startX;
+        y = e.touches[0].clientY - startY;
+    } else {
+        x = e.clientX - startX;
+        y = e.clientY - startY;
+    }
+    currentX = initialX + x;
+    currentY = initialY + y;
+    updateTransform();
+}
 
-        const a = document.createElement('a');
-        a.download = '邂逅ME头像.png';
-        a.href = largeCanvas.toDataURL('image/png');
-        a.click();
+function dragEnd() {
+    isDragging = false;
+}
+
+document.getElementById('zoomIn').addEventListener('click', () => {
+    scale += 0.1;
+    updateTransform();
+});
+document.getElementById('zoomOut').addEventListener('click', () => {
+    scale = Math.max(0.4, scale - 0.1);
+    updateTransform();
+});
+
+let lastDist = 0;
+container.addEventListener('touchmove', e => {
+    if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (lastDist > 0) {
+            const change = (dist - lastDist) * 0.005;
+            scale = Math.max(0.4, Math.min(3, scale + change));
+            updateTransform();
+        }
+        lastDist = dist;
+    }
+});
+
+function updateTransform() {
+    editImg.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+}
+
+saveBtn.addEventListener('click', () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1080;
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.src = editImg.src;
+    img.onload = () => {
+        const s = 1080;
+        const r = s / 260;
+        const x = currentX * r;
+        const y = currentY * r;
+        ctx.save();
+        ctx.translate(s/2, s/2);
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, -s/2 + x, -s/2 + y, s, s);
+        ctx.restore();
+
+        const frame = new Image();
+        frame.src = currentFrame;
+        frame.onload = () => {
+            ctx.drawImage(frame, 0, 0, s, s);
+            const a = document.createElement('a');
+            a.download = '邂逅ME头像.png';
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+        };
     };
+});
 </script>
 </body>
 </html>
